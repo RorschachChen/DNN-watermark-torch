@@ -31,16 +31,20 @@ def train(model, optimizer, dataloader, w, b, k, nb_epoch, target_blk_num):
             optimizer.zero_grad()
             pred = model(d)
             loss = criterion(pred, t)
-            p = get_layer_by(model, target_blk_num)
-            x = torch.mean(p, dim=0)
-            y = x.view(1, -1)
-            regularized_loss = k * torch.sum(
-                F.binary_cross_entropy(input=torch.sigmoid(torch.matmul(y, w)), target=b))
+            regularized_loss = 0
+            if target_blk_num > 0:
+                p = get_layer_by(model, target_blk_num)
+                x = torch.mean(p, dim=0)
+                y = x.view(1, -1)
+                regularized_loss = k * torch.sum(
+                    F.binary_cross_entropy(input=torch.sigmoid(torch.matmul(y, w)), target=b))
             (loss + regularized_loss).backward()
             optimizer.step()
 
 
 def build_wm(model, target_blk_num, embed_dim, wtype):
+    if target_blk_num == 0:
+        return np.array([])
     # get param
     p = get_layer_by(model, target_blk_num)
     w_rows = p.size()[1:4].numel()
@@ -125,7 +129,7 @@ if __name__ == '__main__':
     criterion = torch.nn.CrossEntropyLoss().cuda()
     if len(base_modelw_fname) > 0:
         model.load_state_dict(torch.load(base_modelw_fname))
-    print("Finished compiling")
+    print("Finished building")
 
     train(model, optimizer, trainloader, w, b, k, nb_epoch, target_blk_id)
 
