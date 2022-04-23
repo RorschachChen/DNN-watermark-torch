@@ -23,7 +23,7 @@ python train_wrn.py config/train_non_min.json
 python val_watermark.py result/wrn_WTYPE_random_DIM256_SCALE0.01_N1K4B64EPOCH3_TBLK0.weight result/wrn_WTYPE_random_DIM256_SCALE0.01_N1K4B64EPOCH3_TBLK1_layer7_w.npy result/non
 
 # visualize the embedded watermark
-python utility/draw_histogram_signature.py config/draw_histogram_non.json hist_signature_non.png
+python draw_histogram_signature.py config/draw_histogram_non.json hist_signature_non.png
 ```
 
 ## References
